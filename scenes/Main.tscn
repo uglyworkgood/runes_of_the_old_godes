@@ -1,0 +1,22 @@
+[gd_scene load_steps=2 format=3 uid="uid://dwjupckwvcn0p"]
+
+[ext_resource type="Script" uid="uid://bfu1xk5lbxabg" path="res://scripts/util/Main.gd" id="1_elqb8"]
+
+[node name="Main" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_elqb8")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Tactics RPG" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="Play" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+text = "Play Game!"
+
+[connection signal="pressed" from="VBoxContainer/Play" to="." method="_on_play_pressed"]
