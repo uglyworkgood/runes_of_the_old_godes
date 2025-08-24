@@ -1,6 +1,7 @@
 extends Node
 class_name Battle
 const PF := preload("res://scripts/grid/Pathfinder3D.gd")
+const CharacterSheet := preload("res://ui/CharacterSheet.gd")
 
 # --- tuning ---
 const MELEE_RANGE := 1
@@ -19,6 +20,7 @@ var turn_order: Array[StringName] = []
 var active_index: int = 0
 
 var hover_marker: MeshInstance3D
+var _char_sheet: CharacterSheet
 
 # input mode: "move" or "cast_fb"
 var _mode: StringName = "move"
@@ -132,6 +134,13 @@ func _unhandled_input(event: InputEvent) -> void:
 			return
 
 	if event is InputEventMouseButton and event.pressed:
+		if event.button_index == MOUSE_BUTTON_LEFT and event.double_click:
+			var t_dc: Vector2i = _mouse_tile()
+			if t_dc != null:
+				var id_dc := _entity_id_at_tile(t_dc)
+				if id_dc != "" and entities.has(id_dc):
+					_open_character_sheet(entities[id_dc])
+			return
 		# Right click = melee try
 		if event.button_index == MOUSE_BUTTON_RIGHT:
 			var t_rc: Vector2i = _mouse_tile()
@@ -421,6 +430,18 @@ func _entity_id_at_tile(t: Vector2i) -> StringName:
 		if entities[id].tile == t:
 			return id
 	return StringName("")
+
+func _open_character_sheet(e: Entity3D) -> void:
+	if not is_instance_valid(_char_sheet):
+		_char_sheet = CharacterSheet.new()
+		var ui := get_parent().get_node("UI") if get_parent().has_node("UI") else null
+		if ui:
+			ui.add_child(_char_sheet)
+	_char_sheet.set_entity(e)
+	if _char_sheet.has_method("popup_centered"):
+		_char_sheet.popup_centered()
+	else:
+		_char_sheet.visible = true
 
 func _manhattan(a: Vector2i, b: Vector2i) -> int:
 	return abs(a.x - b.x) + abs(a.y - b.y)
